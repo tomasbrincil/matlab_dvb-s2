@@ -8,5 +8,5 @@ function constellation_16apsk(symbol, radius, gamma, p1, p2, p3, p4, p5, p6, p7,
     array = [complex(lenR1, lenR1) complex(lenR1, -lenR1) complex(-lenR1, -lenR1) complex(-lenR1, lenR1),complex(lenR2sin, lenR2cos),complex(lenR2, lenR2),complex(lenR2cos, lenR2sin),complex(lenR2cos, -lenR2sin), complex(lenR2, -lenR2),complex(lenR2sin, -lenR2cos),complex(-lenR2sin, -lenR2cos),complex(-lenR2, -lenR2), complex(-lenR2cos, -lenR2sin),complex(-lenR2cos, lenR2sin),complex(-lenR2, lenR2),complex(-lenR2sin, lenR2cos)];
     constellation = [array(p1), array(p2), array(p3), array(p4), array(p5), array(p6), array(p7), array(p8), array(p9), array(p10), array(p11), array(p12), array(p13), array(p14), array(p15), array(p16)];
     pos = bin2dec(symbol)+1;
-    constellation(pos)
+    cmplx = constellation(pos)
 end

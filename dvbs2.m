@@ -176,3 +176,46 @@ title('16APSK');
 
 scatterplot(cmplx);
 
+
+
+%% Universal modulator
+% take all input data by four and take IQ from lookup table
+cmplx = 0;
+b=1;
+for a = 1:4:length(interleaved_rot)
+   four = interleaved_rot(a:a+3);
+   symbol = num2str(four);
+   symbol(isspace(symbol)) = '';
+   symbol
+   constellation_16apsk(symbol, 1, 3.15, 6,9,15,12,7,8,14,13,5,10,16,11,1,2,4,3);
+
+   cmplx(b) = cmplx;
+   b = b + 1;
+end
+
+I = [];
+Q = [];
+y = [];
+
+
+for i = 1:length(cmplx)
+    y1=real(cmplx(i))*cos(2*pi*f*t); % inphase component
+    y2=real(cmplx(i))*sin(2*pi*f*t) ;% Quadrature component
+    I=[I y1]; % inphase signal vector
+    Q=[Q y2]; %quadrature signal vector
+    y=[y y1+y2]; % modulated signal vector
+end
+Tx_sig=y; % transmitting signal after modulation
+tt=T/1000:T/1000:(T*length(interleaved_rot)/4);
+figure(2)
+subplot(3,1,1);
+plot(tt,I), grid on;
+title('I');
+subplot(3,1,2);
+plot(tt,Q), grid on;
+title('Q');
+subplot(3,1,3);
+plot(tt,Tx_sig), grid on;
+title('universal - 16APSK');
+
+scatterplot(cmplx);
