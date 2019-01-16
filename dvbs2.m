@@ -21,7 +21,7 @@ BBFRAME = [ BBHEADER DATAFILED];
 %fec_length = 64800;
 % short frame FEC
 %fec_length = 16200;
-fec_length = 60;
+fec_length = 1800;
 
 % lets skip the generation and do some magic for example random gen :))
 FECFRAME = randi([0 1],1,fec_length);
@@ -69,127 +69,24 @@ f = 10e6;
 T = 1 / f;
 % time duration of one symbol
 t = T/1000:T/1000:T;
-I = [];
-Q = [];
-y = [];
-
-% convert array into complex number
-b=1;
-cmplx = [];
-for a = 1:2:length(symbol)
-   cmplx(b) = complex(symbol(a), symbol(a+1));
-   b = b + 1;
-end
-for i = 1:length(cmplx)
-    y1=real(cmplx(i))*cos(2*pi*f*t); % inphase component
-    y2=real(cmplx(i))*sin(2*pi*f*t) ;% Quadrature component
-    I=[I y1]; % inphase signal vector
-    Q=[Q y2]; %quadrature signal vector
-    y=[y y1+y2]; % modulated signal vector
-end
-Tx_sig=y; % transmitting signal after modulation
-tt=T/1000:T/1000:(T*length(interleaved_rof))/2;
-figure(1)
-subplot(3,1,1);
-plot(tt,I), grid on;
-title('I');
-subplot(3,1,2);
-plot(tt,Q), grid on;
-title('Q');
-subplot(3,1,3);
-plot(tt,Tx_sig), grid on;
-title('QPSK');
-scatterplot(cmplx);
-hold on;
-
-cmplx = 0;
 
 
-%% 16 APSK modulator
-% take all input data by four and take IQ from lookup table
-R1 = [0.267+0.267i -0.267+0.267i -0.267-0.267i 0.267-0.267i];
-R2 = [1.095+0.293i 0.802+0.802i 0.293+1.095i -0.293+1.095i -0.802+0.802i -1.095+0.293i -1.095-0.293i -0.802-0.802i -0.293-1.095i 0.293-1.095i 0.802-0.802i 1.095-0.293i]; 
-b=1;
-for a = 1:4:length(interleaved_rot)
-   four = interleaved_rot(a:a+3);
-   
-   if four == [0 0 0 0];
-       cmplx(b)= R2(2);
-   elseif four == [0 0 0 1];
-       cmplx(b)= R2(11);
-   elseif four == [0 0 1 0];
-       cmplx(b) = R2(5);
-   elseif four == [0 0 1 1];
-       cmplx(b) = R2(8);
-   elseif four == [0 1 0 0];
-       cmplx(b) = R2(1);
-   elseif four == [0 1 0 1];
-       cmplx(b) = R2(12);
-   elseif four == [0 1 1 0];
-       cmplx(b) = R2(6);
-   elseif four == [0 1 1 1];
-       cmplx(b) = R2(7);
-   elseif four == [1 0 0 0];
-       cmplx(b) = R2(3);
-   elseif four == [1 0 0 1];
-       cmplx(b) = R2(10);
-   elseif four == [1 0 1 0];
-       cmplx(b) = R2(4);
-   elseif four == [1 0 1 1];
-       cmplx(b) = R2(9);
-   elseif four == [1 1 0 0];
-       cmplx(b) = R1(1);
-   elseif four == [1 1 0 1];
-       cmplx(b) = R1(4);
-   elseif four == [1 1 1 0];
-       cmplx(b) = R1(2);
-   elseif four == [1 1 1 1];
-       cmplx(b) = R1(3);
-   end    
-   b = b + 1;
-end
-
-I = [];
-Q = [];
-y = [];
-
-
-for i = 1:length(cmplx)
-    y1=real(cmplx(i))*cos(2*pi*f*t); % inphase component
-    y2=real(cmplx(i))*sin(2*pi*f*t) ;% Quadrature component
-    I=[I y1]; % inphase signal vector
-    Q=[Q y2]; %quadrature signal vector
-    y=[y y1+y2]; % modulated signal vector
-end
-Tx_sig=y; % transmitting signal after modulation
-tt=T/1000:T/1000:(T*length(interleaved_rot)/4);
-figure(2)
-subplot(3,1,1);
-plot(tt,I), grid on;
-title('I');
-subplot(3,1,2);
-plot(tt,Q), grid on;
-title('Q');
-subplot(3,1,3);
-plot(tt,Tx_sig), grid on;
-title('16APSK');
-
-scatterplot(cmplx);
 
 
 
 %% Universal modulator
 % take all input data by four and take IQ from lookup table
-cmplx = 0;
+bits = 5;
+bitsm = bits-1;
 b=1;
-for a = 1:4:length(interleaved_rot)
-   four = interleaved_rot(a:a+3);
+for a = 1:bits:length(interleaved_rot)
+   four = interleaved_rot(a:a+bitsm);
    symbol = num2str(four);
-   symbol(isspace(symbol)) = '';
-   symbol
-   constellation_16apsk(symbol, 1, 3.15, 6,9,15,12,7,8,14,13,5,10,16,11,1,2,4,3);
-
-   cmplx(b) = cmplx;
+   symbol(isspace(symbol)) = ''
+   %const = constellation_qpsk(symbol, 1, 1, 2, 4, 3);
+   const = constellation_32apsk(symbol, 1, 2.84, 5.27, 6,5,8,2,15,16,12,11,20,18,23,25,31,17,28,26,7,1,10,9,14,4,13,3,21,19,22,24,30,32,29,27);
+   %const = constellation_32apsk(symbol, 1, 2.84, 5.27, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32)
+   cmplxx(b) = const;
    b = b + 1;
 end
 
@@ -198,15 +95,15 @@ Q = [];
 y = [];
 
 
-for i = 1:length(cmplx)
-    y1=real(cmplx(i))*cos(2*pi*f*t); % inphase component
-    y2=real(cmplx(i))*sin(2*pi*f*t) ;% Quadrature component
+for i = 1:length(cmplxx)
+    y1=real(cmplxx(i))*cos(2*pi*f*t); % inphase component
+    y2=real(cmplxx(i))*sin(2*pi*f*t) ;% Quadrature component
     I=[I y1]; % inphase signal vector
     Q=[Q y2]; %quadrature signal vector
     y=[y y1+y2]; % modulated signal vector
 end
 Tx_sig=y; % transmitting signal after modulation
-tt=T/1000:T/1000:(T*length(interleaved_rot)/4);
+tt=T/1000:T/1000:(T*length(interleaved_rot)/bits);
 figure(2)
 subplot(3,1,1);
 plot(tt,I), grid on;
@@ -218,4 +115,4 @@ subplot(3,1,3);
 plot(tt,Tx_sig), grid on;
 title('universal - 16APSK');
 
-scatterplot(cmplx);
+scatterplot(cmplxx);
