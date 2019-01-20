@@ -79,17 +79,17 @@ t = T/s:T/s:T;
 %% Universal modulator
 % take all input data by four and take IQ from lookup table
 
-bits = 2;
+bits = 5;
 bitsm = bits-1;
 b=1;
 for a = 1:bits:length(interleaved_rot)
    four = interleaved_rot(a:a+bitsm);
    symbol = num2str(four);
    symbol(isspace(symbol)) = ''
-   const = constellation_qpsk(symbol, 1, 1, 2, 4, 3);
+   %const = constellation_qpsk(symbol, 1, 1, 2, 4, 3);
    %const = constellation_8psk(symbol, 1, 5, 1, 2, 6, 8, 4, 3, 7);
    %const = constellation_16apsk(symbol, 1, 3.15, 6,9,15,12,7,8,14,13,5,10,16,11,1,2,4,3);
-   %const = constellation_32apsk(symbol, 1, 2.84, 5.27, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32);
+   const = constellation_32apsk(symbol, 1, 2.84, 5.27, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32);
    cmplxx(b) = const;
    b = b + 1;
 end
